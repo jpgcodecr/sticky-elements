@@ -4,70 +4,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smooth scrolling example</title>
-    <script src="sticky-event-listener.js"></script>
-    <style>
-        html {
-            margin: 0;
-            scroll-behavior: smooth;
-            scroll-padding-top: 50px;
-        }
-        .wrapper {
-            width: 500px;
-            margin: 0 auto;
-        }
-        
-        nav {
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 50px;
-            padding: 20px;
-            text-align: center;
-            background: beige;
-            box-sizing: border-box;
-        }
-
-        nav .ctas {
-            display: flex;
-            position: fixed;
-            bottom: 0;
-        }
-
-        .sticky {
-            top: 0;
-            left: 0;
-            width: 100%;;
-            position: sticky;
-            text-align: center;
-            background: #FFF;
-        }
-
-        .notification-banner {
-            width: 100%;
-            padding: 20px;
-            text-align: center;
-            background-color: aquamarine;
-        }
-
-        .stickyContainer {
-            top: 0;
-            left: 0;
-            z-index: 2;
-            width: 100%;
-            position: sticky;
-        }
-        .stickyContainer.top {
-            top: 0;
-        }
-
-        .stickyContainer.bottom {
-            top: auto;
-            bottom: 0;
-            position: fixed;
-        }
-
-    </style>
+    <title>Sticky elements example</title>
+    <link rel="stylesheet" href="assets/styles.css" />
 </head>
 <body>
     <div class="stickyContainer top">
@@ -155,48 +93,7 @@
     <div class="stickyContainer bottom">
         <div class="notification-banner">Notification banner bottom</div>
     </div>
-
-    <script>
-        const stickyElement = document.querySelector('.notification-banner');
-        const stickyContainer = document.querySelector('.stickyContainer');
-
-        // All sticky elements are in the same wrapper to avoid extra validations
-        // Only wrapper will have position sticky
-        const fixScrollPositioning = () => {
-            const stickyNavHeight = new ResizeObserver(function(entries) {
-                const rect = entries[0].contentRect;
-                const height = rect.height;
-                document.documentElement.style.scrollPaddingTop = `${height}px`;
-            });
-    
-            stickyNavHeight.observe(document.querySelector('.stickyContainer.top'));
-        }
-
-        const fixBottomPadding = () => {
-            const stickyNavHeight = new ResizeObserver(function(entries) {
-                const rect = entries[0].contentRect;
-                const height = rect.height;
-                document.documentElement.style.paddingBottom = `${height}px`;
-            });
-    
-            stickyNavHeight.observe(document.querySelector('.stickyContainer.bottom'));
-        }
-
-        fixScrollPositioning();
-        fixBottomPadding();
-        
-
-
-        // This is a handler which detects when a element with CSS position:sticky became sticky
-        // Position of the element can be updated to make sure it is placed in the right place
-        document.querySelectorAll('.sticky').forEach(el => {
-            const instance = new StickyEventListener(el);
-            el.addEventListener('sticky', event => {
-                if(event.detail.stuck) {
-                    el.style.top = `${stickyContainer.offsetHeight}px`;
-                }
-            });
-        });
-    </script>
+    <script src="assets/sticky-event-listener.js"></script>
+    <script src="assets/main.js"></script>
 </body>
 </html>
