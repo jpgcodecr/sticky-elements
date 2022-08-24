@@ -1,8 +1,10 @@
 const stickyElement = document.querySelector('.notification-banner');
 const stickyContainer = document.querySelector('.stickyContainer');
 
-// All sticky elements are in the same wrapper to avoid extra validations
-// Only wrapper will have position sticky
+/**
+ * @method fixScrollPositioning
+ * Fixes scroll positioning using scroll padding top
+ */
 const fixScrollPositioning = () => {
     const stickyNavHeight = new ResizeObserver(function (entries) {
         const rect = entries[0].contentRect;
@@ -13,6 +15,10 @@ const fixScrollPositioning = () => {
     stickyNavHeight.observe(document.querySelector('.stickyContainer.top'));
 }
 
+/**
+ * @method fixBottomPadding
+ * When sticky is bottom an extra margin at the bottom needs to be added
+ */
 const fixBottomPadding = () => {
     const stickyNavHeight = new ResizeObserver(function (entries) {
         const rect = entries[0].contentRect;
@@ -23,6 +29,7 @@ const fixBottomPadding = () => {
     stickyNavHeight.observe(document.querySelector('.stickyContainer.bottom'));
 }
 
+// Calls
 fixScrollPositioning();
 fixBottomPadding();
 
