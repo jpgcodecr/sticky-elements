@@ -1,9 +1,9 @@
 // Get all fixed top elements and calculate height
 let fixedTopEls;
 let fixedTopElsHeight;
-const fixedBottomEls = document.querySelectorAll('.fixed-bottom');
+let fixedBottomEls;
+let fixedBottomElsHeight;
 const fixedBottomElsContainer = document.querySelectorAll('.aem-wrap--bottom');
-const fixedBottomElsHeight = [...fixedBottomEls].map(el => el.offsetHeight).reduce((prev, cur) => prev += cur, 0);
 const bottomStickyContainer = document.createElement('div');
 
 /**
@@ -25,15 +25,13 @@ const fixScrollPositioning = () => {
  * Needed for when a element is removed from the DOM (like notification banner)
  */
 const observeHeaderMutationChanges = () => {
-    const observer = new MutationObserver(function(mutations_list) {
-        mutations_list.forEach(function(mutation) {
-            mutation.removedNodes.forEach(function(removed_node) {
-                fixScrollPositioning();
-            });
-        });
-    });
-    
-    observer.observe(document.querySelector(".header"), { subtree: false, childList: true });
+    // Observe header changes to updated the scroll positioning
+    const observer = new MutationObserver((mutations_list) => mutations_list.forEach(() => { fixScrollPositioning()}));
+    observer.observe(document.querySelector('.header'), { subtree: false, childList: true });
+
+    // Observer bottom container changes to fix bottom padding
+    const bottomObserver = new MutationObserver((mutations_list) => mutations_list.forEach(() => {fixBottomPadding()}));
+    bottomObserver.observe(document.querySelector('.fixed-bottom-container'), { subtree: false, childList: true });
 }
 
 /**
@@ -41,31 +39,35 @@ const observeHeaderMutationChanges = () => {
  * When sticky is bottom an extra margin at the bottom needs to be added
  */
 const fixBottomPadding = () => {
+    fixedBottomEls = document.querySelectorAll('.fixed-bottom');
+    fixedBottomElsHeight = [...fixedBottomEls].map(el => el.offsetHeight).reduce((prev, cur) => prev += cur, 0);
+
     document.documentElement.style.paddingBottom = `${fixedBottomElsHeight}px`;
 }
 
+/**
+ * @method setBottomFixedElements
+ * Dynamically appending elements to the bottom fixed container
+ */
 const setBottomFixedElements = () => {
     const str = [...fixedBottomElsContainer].reduce((prev, cur) => prev += cur.innerHTML, '');
     [...fixedBottomElsContainer].forEach(el => el.remove());
     bottomStickyContainer.classList.add('fixed-bottom-container');
     bottomStickyContainer.innerHTML = str;
-    document.documentElement.appendChild(bottomStickyContainer);
+    document.body.appendChild(bottomStickyContainer);
+    fixBottomPadding();
 };
 
 // Calls
-fixBottomPadding();
 fixScrollPositioning();
 setBottomFixedElements();
 observeHeaderMutationChanges();
-
 
 // This is a callback handler which detects when a element with CSS position:sticky became sticky
 // Position of the element can be updated to make sure it is placed in the right place
 document.querySelectorAll('.sticky').forEach(el => {
     const instance = new StickyEventListener(el);
     el.addEventListener('sticky', event => {
-        if (event.detail.stuck) {
-            el.style.top = `${fixedTopElsHeight}px`;
-        }
+        if (event.detail.stuck) { el.style.top = `${fixedTopElsHeight}px` }
     });
 });
